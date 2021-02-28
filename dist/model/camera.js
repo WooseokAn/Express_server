@@ -32,7 +32,7 @@ exports.CameraSchema = new mongoose_1.Schema({
     },
     createdAt: {
         type: String,
-        default: new Date(),
+        default: Date.now,
     },
 });
 // Model

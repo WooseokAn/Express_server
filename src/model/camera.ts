@@ -41,7 +41,7 @@ export const CameraSchema: Schema = new Schema({
   },
   createdAt: {
     type: String,
-    default: new Date(),
+    default: Date.now,
   },
 });
 

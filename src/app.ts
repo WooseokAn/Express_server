@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 
 import cameraRoute from "./routes/camera";
+import recordRoute from "./routes/record";
 
 const { PORT, ATLAS_USER, ATLAS_PASSWORD, ATLAS_DB_NAME } = process.env;
 const app = express();
@@ -13,9 +14,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/api/camera", cameraRoute);
+app.use("/api/record", recordRoute);
 
 app.get("/welcome", (req: Request, res: Response) => {
-  res.json("API Endpoints...");
+  res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
 });
 
 /**
@@ -30,7 +32,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
  * This takes all errors occured in the previous middlewares.
  * It must have 4 arguments.
  **/
-app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
+app.use((err: CustomError, req: Request, res: Response, _next: NextFunction) => {
   errorHandler(err, res);
 });
 

@@ -25,7 +25,7 @@ exports.RecordSchema = new mongoose_1.Schema({
     },
     createdAt: {
         type: String,
-        default: new Date(),
+        default: Date.now, // [중요] new Date()가 아니라 Date.now를 사용해야 한다.
     },
     expiresAt: {
         type: Date,

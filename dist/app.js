@@ -8,14 +8,16 @@ var error_1 = require("./utils/error");
 var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var camera_1 = __importDefault(require("./routes/camera"));
+var record_1 = __importDefault(require("./routes/record"));
 var _a = process.env, PORT = _a.PORT, ATLAS_USER = _a.ATLAS_USER, ATLAS_PASSWORD = _a.ATLAS_PASSWORD, ATLAS_DB_NAME = _a.ATLAS_DB_NAME;
 var app = express_1.default();
 // TODO: CORS Header Settings...
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use("/api/camera", camera_1.default);
+app.use("/api/record", record_1.default);
 app.get("/welcome", function (req, res) {
-    res.json("API Endpoints...");
+    res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
 });
 /**
  * 404 Not Found Handling
@@ -28,7 +30,7 @@ app.use(function (req, res, next) {
  * This takes all errors occured in the previous middlewares.
  * It must have 4 arguments.
  **/
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res, _next) {
     error_1.errorHandler(err, res);
 });
 /**
