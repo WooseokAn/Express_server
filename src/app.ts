@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 import cameraRoute from "./routes/camera";
 import recordRoute from "./routes/record";
+import sectionRoute from "./routes/section";
 
 const { PORT, ATLAS_USER, ATLAS_PASSWORD, ATLAS_DB_NAME } = process.env;
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use("/api/camera", cameraRoute);
 app.use("/api/record", recordRoute);
+app.use("/api/section", sectionRoute);
 
 app.get("/welcome", (req: Request, res: Response) => {
   res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");

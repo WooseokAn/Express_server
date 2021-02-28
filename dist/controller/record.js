@@ -129,7 +129,7 @@ function retrieveAllRecord(req, res, next) {
 }
 exports.retrieveAllRecord = retrieveAllRecord;
 /**
- * 특정 카메라 장치에서 검출하여 저장한 데이터의 목록 조회를 위한 API Endpoint. (HTTP GET Reqeust, Query Param Required)
+ * 특정 카메라 장치에서 검출하여 저장한 데이터 중 가장 최신 데이터의 조회를 위한 API Endpoint. (HTTP GET Reqeust, Query Param Required)
  * @param req 클라이언트 Request
  * @param res 클라이언트 측에 전송할 Response
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수

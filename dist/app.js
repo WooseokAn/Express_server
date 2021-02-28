@@ -9,6 +9,7 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var camera_1 = __importDefault(require("./routes/camera"));
 var record_1 = __importDefault(require("./routes/record"));
+var section_1 = __importDefault(require("./routes/section"));
 var _a = process.env, PORT = _a.PORT, ATLAS_USER = _a.ATLAS_USER, ATLAS_PASSWORD = _a.ATLAS_PASSWORD, ATLAS_DB_NAME = _a.ATLAS_DB_NAME;
 var app = express_1.default();
 // TODO: CORS Header Settings...
@@ -16,6 +17,7 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use("/api/camera", camera_1.default);
 app.use("/api/record", record_1.default);
+app.use("/api/section", section_1.default);
 app.get("/welcome", function (req, res) {
     res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
 });
