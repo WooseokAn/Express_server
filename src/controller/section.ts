@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { Schema } from "mongoose";
+
 import { sectionModel, Section } from "../model/section";
+import { recordModel } from "../model/record";
 import { CustomError } from "../utils/error";
+import { CongestionCalculator } from "../utils/congestion";
 
 /**
  * 신규 구역 등록을 위한 API Endpoint. (HTTP POST Reqeust)
@@ -100,31 +104,71 @@ export function retrieveOneSection(req: Request, res: Response, next: NextFuncti
 export function retrieveCongestion(req: Request, res: Response, next: NextFunction): void {
   const sectionId = (req.params as { sectionId: string }).sectionId;
 
-  res.json({
-    result: 1,
-    data: sectionId,
-  });
+  sectionModel
+    .findOne({ _id: sectionId })
+    .then(section => {
+      if (!section) {
+        const error = new CustomError(404, "Not Found");
+        throw error;
+      }
 
-  // sectionModel
-  //   .findOne({ _id: sectionId })
-  //   .then(section => {
-  //     // 입력된 일련 번호와 일치하는 카메라가 존재하지 않는 경우
-  //     if (!section) {
-  //       const error = new CustomError(404, "Not Found");
-  //       throw error;
-  //     }
+      return section as Section;
+    })
+    .then(async section => {
+      const { registeredCameras, totalArea, invalidArea } = section;
+      const numberOfCamera = registeredCameras?.length || 0;
 
-  //     return section.registeredCameras;
-  //   })
-  //   .then(cameraIdArray => {
-  //     console.log(cameraIdArray);
-  //   })
-  //   .catch(error => {
-  //     // TODO: 보다 더 적절한 예외 처리
-  //     if (!("statusCode" in error && "message" in error)) {
-  //       error = new CustomError(400, "Bad Request");
-  //     }
+      if (numberOfCamera === 0) {
+        const error = new CustomError(404, "Not Found");
+        throw error;
+      }
 
-  //     next(error);
-  //   });
+      // map()을 이용해 Pending 상태의 Promise를 배열애 담고, Promise.all()을 통해 전부 '이행' 시킨다.
+      const totalCounts = (
+        await Promise.all(
+          (registeredCameras as Schema.Types.ObjectId[]).map(cameraObjectId => {
+            const pendingPromise = recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: 1 });
+            return pendingPromise;
+          })
+        )
+      )
+        // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
+        .reduce(
+          (accumulator, currentValue) => {
+            if (currentValue && currentValue.personCount && currentValue.tentCount) {
+              accumulator.tentCount += currentValue.tentCount;
+              accumulator.personCount += currentValue.personCount;
+            }
+
+            return accumulator;
+          },
+          { tentCount: 0, personCount: 0 }
+        );
+
+      return { numberOfCamera, totalArea, invalidArea, ...totalCounts } as {
+        numberOfCamera: number;
+        totalArea: number;
+        invalidArea: number;
+        tentCount: number;
+        personCount: number;
+      };
+    })
+    .then(({ numberOfCamera, totalArea, invalidArea, tentCount, personCount }) => {
+      const congestionCalculator = new CongestionCalculator(totalArea, invalidArea, numberOfCamera);
+      const congestion = congestionCalculator.calculateCongestion(tentCount, personCount);
+      const congestionLevel = congestionCalculator.parseCongestion(congestion);
+
+      res.json({
+        result: 1,
+        congestionLevel: congestionLevel,
+      });
+    })
+    .catch(error => {
+      // TODO: 보다 더 적절한 예외 처리
+      if (!("statusCode" in error && "message" in error)) {
+        error = new CustomError(400, "Bad Request");
+      }
+
+      next(error);
+    });
 }
