@@ -7,12 +7,14 @@ require("dotenv/config");
 var error_1 = require("./utils/error");
 var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
+var camera_1 = __importDefault(require("./routes/camera"));
 var _a = process.env, PORT = _a.PORT, ATLAS_USER = _a.ATLAS_USER, ATLAS_PASSWORD = _a.ATLAS_PASSWORD, ATLAS_DB_NAME = _a.ATLAS_DB_NAME;
 var app = express_1.default();
 // TODO: CORS Header Settings...
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
-app.get("/api", function (req, res) {
+app.use("/api/camera", camera_1.default);
+app.get("/welcome", function (req, res) {
     res.json("API Endpoints...");
 });
 /**

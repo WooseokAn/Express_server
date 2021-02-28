@@ -3,6 +3,8 @@ import { CustomError, errorHandler } from "./utils/error";
 import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 
+import cameraRoute from "./routes/camera";
+
 const { PORT, ATLAS_USER, ATLAS_PASSWORD, ATLAS_DB_NAME } = process.env;
 const app = express();
 
@@ -10,7 +12,9 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.get("/api", (req: Request, res: Response) => {
+app.use("/api/camera", cameraRoute);
+
+app.get("/welcome", (req: Request, res: Response) => {
   res.json("API Endpoints...");
 });
 
