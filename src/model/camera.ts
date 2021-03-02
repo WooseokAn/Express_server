@@ -3,7 +3,7 @@
  *  components:
  *    schemas:
  *      Camera:
- *        type: Object
+ *        type: object
  *        required:
  *          - deviceCode
  *          - location
@@ -12,20 +12,20 @@
  *          - description
  *        properties:
  *          deviceCode:
- *            type: String
+ *            type: string
  *            format: SALMON-XXXX
  *            description: 카메라 일련번호
  *          location:
- *            type: String
+ *            type: string
  *            description: 카메라가 설치된 위치 또는 구역 이름
  *          longitude:
- *            type: Number
+ *            type: number
  *            description: 경도 (지도 API 사용 시 필요할 수 있으므로 포함)
  *          latitude:
- *            type: Number
+ *            type: number
  *            description: 위도 (지도 API 사용 시 필요할 수 있으므로 포함)
  *          description:
- *            type: String
+ *            type: string
  *            description: 카메라를 기억하기 쉽도록 도울 수 있는 간략한 설명 등
  *          createdAt:
  *            type: Date

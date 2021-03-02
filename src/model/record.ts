@@ -3,16 +3,16 @@
  *  components:
  *    schemas:
  *      Record:
- *        type: Object
+ *        type: object
  *        required:
  *          - personCount
  *          - tentCount
  *        properties:
  *          personCount:
- *            type: Number
+ *            type: number
  *            description: RPI에서 전송되는 객체 수 검출 값 (사람)
  *          tentCount:
- *            type: Number
+ *            type: number
  *            description: RPI에서 전송되는 객체 수 검출 값 (텐트)
  *          takenBy:
  *            type: Mongoose.Types.ObjectID
