@@ -21,7 +21,7 @@ app.use(express.json());
 app.use("/api/camera", cameraRoute);
 app.use("/api/record", recordRoute);
 app.use("/api/section", sectionRoute);
-app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDoc(swaggerOptions)));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDoc(swaggerOptions)));
 
 app.get("/welcome", (req: Request, res: Response) => {
   res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
