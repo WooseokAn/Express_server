@@ -1,9 +1,27 @@
 /**
- * 레코드 ID: J321K9453JE...
- * 카메라 일련번호: salmon-XXXX
- * 촬영 시간: XXXX-XX-XX XX:XX (ISO)
- * 검출된 사람 수: 29
- * 검출된 텐트 수: 17
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Record:
+ *        type: Object
+ *        required:
+ *          - personCount
+ *          - tentCount
+ *        properties:
+ *          personCount:
+ *            type: Number
+ *            description: RPI에서 전송되는 객체 수 검출 값 (사람)
+ *          tentCount:
+ *            type: Number
+ *            description: RPI에서 전송되는 객체 수 검출 값 (텐트)
+ *          takenBy:
+ *            type: Mongoose.Types.ObjectID
+ *            description: MongoDB에서 자동 생성되는 BSON Type의 객체 ID 값.
+ *          createdAt:
+ *            type: Date
+ *          expiresAt:
+ *            type: Date
+ *            description: Document가 소멸되기 까지의 기간 (현재 1일)
  */
 
 import { model, Schema, Model, Document } from "mongoose";

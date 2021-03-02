@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var section_1 = require("../controller/section");
-var router = express_1.Router();
+const express_1 = require("express");
+const section_1 = require("../controller/section");
+const router = express_1.Router();
 router.post("/", section_1.createSection);
 router.get("/", section_1.retrieveAllSection);
 router.get("/:sectionId", section_1.retrieveOneSection);
