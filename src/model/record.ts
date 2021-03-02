@@ -15,8 +15,8 @@
  *            type: number
  *            description: RPI에서 전송되는 객체 수 검출 값 (텐트)
  *          takenBy:
- *            type: Mongoose.Types.ObjectID
- *            description: MongoDB에서 자동 생성되는 BSON Type의 객체 ID 값.
+ *            type: string
+ *            description: 본 레코드를 등록한 카메라를 참조하기 위한 BSON Type의 ID
  *          createdAt:
  *            type: Date
  *          expiresAt:

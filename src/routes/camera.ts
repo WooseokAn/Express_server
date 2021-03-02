@@ -15,21 +15,40 @@ const router = Router();
  *  post:
  *    summary: 신규 카메라 장치를 등록한다.
  *    tags: [Cameras]
- *    comsumes:
- *      application/json
- *    parameters:
- *      - in: body
- *        name: user
- *        description: 신규 장치 등록을 위해 필요한 정보.
- *        schema:
- *          $ref: '#/components/schemas/Camera'
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Camera'
+ *          example:
+ *            deviceCode: SALMON-0000
+ *            location: 뚝섬 한강공원 여름캠핑장 1번 구역
+ *            longitude:  127.32132
+ *            latitude: 35.32131
+ *            description: CU 편의점 인근에 설치한 카메라입니다.
  *    responses:
  *      200:
  *        description: 요청한 카메라의 세부 정보
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Camera'
+ *              result:
+ *                type: number
+ *              data:
+ *                $ref: '#/components/schemas/Camera'
+ *            example:
+ *              result: 1
+ *              data:
+ *                {
+ *                  _id: 603b5445d93fd37d34a6a516,
+ *                  deviceCode: SALMON-0001,
+ *                  location: 뚝섬 한강공원 여름캠핑장 1번 구역,
+ *                  longitude:  127.32132,
+ *                  latitude: 35.32131,
+ *                  description: CU 편의점 인근에 설치한 카메라입니다.,
+ *                  createdAt: 1614672979913,
+ *                }
  */
 router.post("/", registerCamera);
 
@@ -46,7 +65,23 @@ router.post("/", registerCamera);
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Camera'
+ *                result:
+ *                  type: number
+ *                data:
+ *                  type: array
+ *              example:
+ *                result: 1
+ *                data: [
+ *                  {
+ *                    _id: 603b5445d93fd37d34a6a516,
+ *                    deviceCode: SALMON-0000,
+ *                    location: 뚝섬 한강공원 여름캠핑장 1번 구역,
+ *                    longitude:  127.32132,
+ *                    latitude: 35.32131,
+ *                    description: CU 편의점 인근에 설치한 카메라입니다.,
+ *                    createdAt: 1614672979913,
+ *                  },
+ *                ]
  */
 router.get("/", retrieveAllCamera);
 
@@ -54,22 +89,38 @@ router.get("/", retrieveAllCamera);
  * @swagger
  *  /api/camera/{deviceCode}:
  *    get:
- *      summary: 전체 카메라 장치의 목록을 조회한다.
+ *      summary: 단일 카메라 장치의 세부정보를 조회한다.
  *      tags: [Cameras]
- *      description: 전체 카메라 장치의 목록을 조회한다.
+ *      description: 단일 카메라 장치의 세부정보를 조회한다.
  *      parameters:
  *        - name: deviceCode
  *          in: path
- *          description: "장치 일련번호 (ex. SALMON-0001)"
+ *          description: "장치 일련번호"
  *          required: true
  *          type: string
+ *          example: SALMON-0001
  *      responses:
  *        200:
  *          description: 등록된 카메라의 세부 정보
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Camera'
+ *                result:
+ *                  type: number
+ *                data:
+ *                  $ref: '#/components/schemas/Camera'
+ *              example:
+ *                result: 1
+ *                data:
+ *                  {
+ *                    _id: 603b5445d93fd37d34a6a516,
+ *                    deviceCode: SALMON-0001,
+ *                    location: 뚝섬 한강공원 여름캠핑장 1번 구역,
+ *                    longitude:  127.32132,
+ *                    latitude: 35.32131,
+ *                    description: CU 편의점 인근에 설치한 카메라입니다.,
+ *                    createdAt: 1614672979913,
+ *                  }
  */
 router.get("/:deviceCode", retrieveOneCamera);
 
