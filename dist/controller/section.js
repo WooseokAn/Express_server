@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -19,58 +8,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.retrieveCongestion = exports.retrieveOneSection = exports.retrieveAllSection = exports.createSection = void 0;
-var section_1 = require("../model/section");
-var record_1 = require("../model/record");
-var error_1 = require("../utils/error");
-var congestion_1 = require("../utils/congestion");
+const section_1 = require("../model/section");
+const record_1 = require("../model/record");
+const error_1 = require("../utils/error");
+const congestion_1 = require("../utils/congestion");
 /**
  * 신규 구역 등록을 위한 API Endpoint. (HTTP POST Reqeust)
  * @param req 클라이언트 Request
  * @param res 클라이언트 측에 전송할 Response
  */
 function createSection(req, res) {
-    var formData = req.body;
-    var newSection = new section_1.sectionModel(__assign({}, formData));
+    const formData = req.body;
+    const newSection = new section_1.sectionModel(Object.assign({}, formData));
     newSection
         .save()
-        .then(function (savedSection) {
+        .then(savedSection => {
         res.json({
             result: 1,
             data: savedSection,
         });
     })
-        .catch(function (error) {
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
-        res.json(__assign({ result: 0 }, error));
+        res.json(Object.assign({ result: 0 }, error));
     });
 }
 exports.createSection = createSection;
@@ -82,15 +44,15 @@ exports.createSection = createSection;
 function retrieveAllSection(req, res) {
     section_1.sectionModel
         .find()
-        .then(function (sections) {
+        .then(sections => {
         res.json({
             result: 1,
             data: sections,
         });
     })
-        .catch(function (error) {
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
-        res.json(__assign({ result: 0 }, error));
+        res.json(Object.assign({ result: 0 }, error));
     });
 }
 exports.retrieveAllSection = retrieveAllSection;
@@ -101,13 +63,13 @@ exports.retrieveAllSection = retrieveAllSection;
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수
  */
 function retrieveOneSection(req, res, next) {
-    var sectionId = req.params.sectionId;
+    const sectionId = req.params.sectionId;
     section_1.sectionModel
         .findOne({ _id: sectionId })
-        .then(function (section) {
+        .then(section => {
         // 입력된 일련 번호와 일치하는 카메라가 존재하지 않는 경우
         if (!section) {
-            var error = new error_1.CustomError(404, "Not Found");
+            const error = new error_1.CustomError(404, "Not Found");
             throw error;
         }
         res.json({
@@ -115,7 +77,7 @@ function retrieveOneSection(req, res, next) {
             data: section,
         });
     })
-        .catch(function (error) {
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
         if (!("statusCode" in error && "message" in error)) {
             error = new error_1.CustomError(400, "Bad Request");
@@ -131,57 +93,48 @@ exports.retrieveOneSection = retrieveOneSection;
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수
  */
 function retrieveCongestion(req, res, next) {
-    var _this = this;
-    var sectionId = req.params.sectionId;
+    const sectionId = req.params.sectionId;
     section_1.sectionModel
         .findOne({ _id: sectionId })
-        .then(function (section) {
+        .then(section => {
         if (!section) {
-            var error = new error_1.CustomError(404, "Not Found");
+            const error = new error_1.CustomError(404, "Not Found");
             throw error;
         }
         return section;
     })
-        .then(function (section) { return __awaiter(_this, void 0, void 0, function () {
-        var registeredCameras, totalArea, invalidArea, numberOfCamera, error, totalCounts;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    registeredCameras = section.registeredCameras, totalArea = section.totalArea, invalidArea = section.invalidArea;
-                    numberOfCamera = (registeredCameras === null || registeredCameras === void 0 ? void 0 : registeredCameras.length) || 0;
-                    if (numberOfCamera === 0) {
-                        error = new error_1.CustomError(404, "Not Found");
-                        throw error;
-                    }
-                    return [4 /*yield*/, Promise.all(registeredCameras.map(function (cameraObjectId) {
-                            var pendingPromise = record_1.recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: 1 });
-                            return pendingPromise;
-                        }))];
-                case 1:
-                    totalCounts = (_a.sent())
-                        // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
-                        .reduce(function (accumulator, currentValue) {
-                        if (currentValue && currentValue.personCount && currentValue.tentCount) {
-                            accumulator.tentCount += currentValue.tentCount;
-                            accumulator.personCount += currentValue.personCount;
-                        }
-                        return accumulator;
-                    }, { tentCount: 0, personCount: 0 });
-                    return [2 /*return*/, __assign({ numberOfCamera: numberOfCamera, totalArea: totalArea, invalidArea: invalidArea }, totalCounts)];
+        .then((section) => __awaiter(this, void 0, void 0, function* () {
+        const { registeredCameras, totalArea, invalidArea } = section;
+        const numberOfCamera = (registeredCameras === null || registeredCameras === void 0 ? void 0 : registeredCameras.length) || 0;
+        if (numberOfCamera === 0) {
+            const error = new error_1.CustomError(404, "Not Found");
+            throw error;
+        }
+        // map()을 이용해 Pending 상태의 Promise를 배열애 담고, Promise.all()을 통해 전부 '이행' 시킨다.
+        const totalCounts = (yield Promise.all(registeredCameras.map(cameraObjectId => {
+            const pendingPromise = record_1.recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: 1 });
+            return pendingPromise;
+        })))
+            // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
+            .reduce((accumulator, currentValue) => {
+            if (currentValue && currentValue.personCount && currentValue.tentCount) {
+                accumulator.tentCount += currentValue.tentCount;
+                accumulator.personCount += currentValue.personCount;
             }
-        });
-    }); })
-        .then(function (_a) {
-        var numberOfCamera = _a.numberOfCamera, totalArea = _a.totalArea, invalidArea = _a.invalidArea, tentCount = _a.tentCount, personCount = _a.personCount;
-        var congestionCalculator = new congestion_1.CongestionCalculator(totalArea, invalidArea, numberOfCamera);
-        var congestion = congestionCalculator.calculateCongestion(tentCount, personCount);
-        var congestionLevel = congestionCalculator.parseCongestion(congestion);
+            return accumulator;
+        }, { tentCount: 0, personCount: 0 });
+        return Object.assign({ numberOfCamera, totalArea, invalidArea }, totalCounts);
+    }))
+        .then(({ numberOfCamera, totalArea, invalidArea, tentCount, personCount }) => {
+        const congestionCalculator = new congestion_1.CongestionCalculator(totalArea, invalidArea, numberOfCamera);
+        const congestion = congestionCalculator.calculateCongestion(tentCount, personCount);
+        const congestionLevel = congestionCalculator.parseCongestion(congestion);
         res.json({
             result: 1,
             congestionLevel: congestionLevel,
         });
     })
-        .catch(function (error) {
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
         if (!("statusCode" in error && "message" in error)) {
             error = new error_1.CustomError(400, "Bad Request");

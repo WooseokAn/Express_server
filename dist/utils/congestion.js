@@ -8,8 +8,8 @@ var CongestionLevel;
     CongestionLevel[CongestionLevel["MODERATE"] = 2] = "MODERATE";
     CongestionLevel[CongestionLevel["CONGESTED"] = 3] = "CONGESTED";
 })(CongestionLevel || (CongestionLevel = {}));
-var CongestionCalculator = /** @class */ (function () {
-    function CongestionCalculator(totalArea, invalidArea, numberOfCamera) {
+class CongestionCalculator {
+    constructor(totalArea, invalidArea, numberOfCamera) {
         this._tentArea = 4;
         this._peopleArea = 2;
         this._cameraWeight = 1.25;
@@ -20,96 +20,72 @@ var CongestionCalculator = /** @class */ (function () {
         this.invalidArea = invalidArea;
         this.numberOfCamera = numberOfCamera;
     }
-    Object.defineProperty(CongestionCalculator.prototype, "tentArea", {
-        get: function () {
-            return this._tentArea;
-        },
-        set: function (newVal) {
-            if (0 < newVal && newVal < 6)
-                this._tentArea = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'tentArea' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(CongestionCalculator.prototype, "peopleArea", {
-        get: function () {
-            return this._peopleArea;
-        },
-        set: function (newVal) {
-            if (0 < newVal && newVal < 4)
-                this._peopleArea = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(CongestionCalculator.prototype, "cameraWeight", {
-        get: function () {
-            return this._cameraWeight;
-        },
-        set: function (newVal) {
-            if (1 < newVal && newVal < 2)
-                this._cameraWeight = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(CongestionCalculator.prototype, "peopleWeight", {
-        get: function () {
-            return this._peopleWeight;
-        },
-        set: function (newVal) {
-            if (1 < newVal && newVal < 2)
-                this._peopleWeight = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(CongestionCalculator.prototype, "criteria", {
-        get: function () {
-            return this._criteria;
-        },
-        set: function (newVal) {
-            if (0 < newVal && newVal < 100)
-                this._criteria = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(CongestionCalculator.prototype, "accruacy", {
-        get: function () {
-            return this._accruacy;
-        },
-        set: function (newVal) {
-            if (1 < newVal && newVal < 2)
-                this._accruacy = newVal;
-            else
-                throw new Error("[ERROR] Invalid Value for 'accruacy' Field in CongestionCalculator");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    CongestionCalculator.prototype.calculateAvailableArea = function () {
+    get tentArea() {
+        return this._tentArea;
+    }
+    set tentArea(newVal) {
+        if (0 < newVal && newVal < 6)
+            this._tentArea = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'tentArea' Field in CongestionCalculator");
+    }
+    get peopleArea() {
+        return this._peopleArea;
+    }
+    set peopleArea(newVal) {
+        if (0 < newVal && newVal < 4)
+            this._peopleArea = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
+    }
+    get cameraWeight() {
+        return this._cameraWeight;
+    }
+    set cameraWeight(newVal) {
+        if (1 < newVal && newVal < 2)
+            this._cameraWeight = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
+    }
+    get peopleWeight() {
+        return this._peopleWeight;
+    }
+    set peopleWeight(newVal) {
+        if (1 < newVal && newVal < 2)
+            this._peopleWeight = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
+    }
+    get criteria() {
+        return this._criteria;
+    }
+    set criteria(newVal) {
+        if (0 < newVal && newVal < 100)
+            this._criteria = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
+    }
+    get accruacy() {
+        return this._accruacy;
+    }
+    set accruacy(newVal) {
+        if (1 < newVal && newVal < 2)
+            this._accruacy = newVal;
+        else
+            throw new Error("[ERROR] Invalid Value for 'accruacy' Field in CongestionCalculator");
+    }
+    calculateAvailableArea() {
         return this.totalArea - this.invalidArea;
-    };
-    CongestionCalculator.prototype.calculateTotalTentArea = function (tentCount) {
+    }
+    calculateTotalTentArea(tentCount) {
         return tentCount * this.tentArea;
-    };
-    CongestionCalculator.prototype.calculateTotalPeopleArea = function (peopleCount) {
+    }
+    calculateTotalPeopleArea(peopleCount) {
         return peopleCount * this.peopleArea * this.peopleWeight;
-    };
-    CongestionCalculator.prototype.parseCongestion = function (congestion) {
-        var evaluatedValue = congestion / this.criteria;
-        var congestionLevel;
+    }
+    parseCongestion(congestion) {
+        const evaluatedValue = congestion / this.criteria;
+        let congestionLevel;
         if (evaluatedValue >= 0.5) {
             congestionLevel = CongestionLevel.CONGESTED;
         }
@@ -123,13 +99,12 @@ var CongestionCalculator = /** @class */ (function () {
             congestionLevel = CongestionLevel.EMPTY;
         }
         return congestionLevel;
-    };
-    CongestionCalculator.prototype.calculateCongestion = function (tentCount, peopleCount) {
-        var availableArea = this.calculateAvailableArea();
-        var takenArea = this.calculateTotalPeopleArea(peopleCount) + this.calculateTotalTentArea(tentCount);
-        var congestion = this.accruacy * ((this.cameraWeight * this.numberOfCamera * takenArea) / availableArea) * 100;
+    }
+    calculateCongestion(tentCount, peopleCount) {
+        const availableArea = this.calculateAvailableArea();
+        const takenArea = this.calculateTotalPeopleArea(peopleCount) + this.calculateTotalTentArea(tentCount);
+        const congestion = this.accruacy * ((this.cameraWeight * this.numberOfCamera * takenArea) / availableArea) * 100;
         return congestion;
-    };
-    return CongestionCalculator;
-}());
+    }
+}
 exports.CongestionCalculator = CongestionCalculator;

@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -19,38 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.retrieveLastestRecord = exports.retrieveAllRecord = exports.createRecord = void 0;
-var camera_1 = require("../model/camera");
-var record_1 = require("../model/record");
-var error_1 = require("../utils/error");
+const camera_1 = require("../model/camera");
+const record_1 = require("../model/record");
+const error_1 = require("../utils/error");
 /**
  * 특정 카메라 장치에서 검출한 사람/텐트 객체수 등록을 위한 API Endpoint. (HTTP POST Reqeust, Query Param Required)
  * @param req 클라이언트 Request
@@ -58,26 +20,26 @@ var error_1 = require("../utils/error");
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수
  */
 function createRecord(req, res, next) {
-    var deviceCode = req.params.deviceCode;
-    var formData = req.body;
+    const deviceCode = req.params.deviceCode;
+    const formData = req.body;
     camera_1.cameraModel
         .findOne({ deviceCode: deviceCode })
-        .then(function (targetDevice) {
+        .then(targetDevice => {
         if (!targetDevice) {
-            var error = new error_1.CustomError(404, "Not Found");
+            const error = new error_1.CustomError(404, "Not Found");
             throw error;
         }
         // [중요] Document ID는 Schema.Types.ObjectId 타입이다.
-        var createdRecord = new record_1.recordModel(__assign(__assign({}, formData), { takenBy: targetDevice._id }));
+        const createdRecord = new record_1.recordModel(Object.assign(Object.assign({}, formData), { takenBy: targetDevice._id }));
         return createdRecord.save();
     })
-        .then(function (savedRecord) {
+        .then(savedRecord => {
         res.json({
             result: 1,
             data: savedRecord,
         });
     })
-        .catch(function (error) {
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
         if (!("statusCode" in error && "message" in error)) {
             error = new error_1.CustomError(400, "Bad Request");
@@ -93,33 +55,24 @@ exports.createRecord = createRecord;
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수
  */
 function retrieveAllRecord(req, res, next) {
-    var _this = this;
-    var deviceCode = req.params.deviceCode;
+    const deviceCode = req.params.deviceCode;
     camera_1.cameraModel
         .findOne({ deviceCode: deviceCode })
-        .then(function (targetDevice) {
+        .then(targetDevice => {
         if (!targetDevice) {
-            var error = new error_1.CustomError(404, "Not Found");
+            const error = new error_1.CustomError(404, "Not Found");
             throw error;
         }
         return targetDevice._id;
     })
-        .then(function (deviceObjectId) { return __awaiter(_this, void 0, void 0, function () {
-        var records;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, record_1.recordModel.find({ takenBy: deviceObjectId })];
-                case 1:
-                    records = _a.sent();
-                    res.json({
-                        result: 1,
-                        data: records,
-                    });
-                    return [2 /*return*/];
-            }
+        .then((deviceObjectId) => __awaiter(this, void 0, void 0, function* () {
+        const records = yield record_1.recordModel.find({ takenBy: deviceObjectId });
+        res.json({
+            result: 1,
+            data: records,
         });
-    }); })
-        .catch(function (error) {
+    }))
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
         if (!("statusCode" in error && "message" in error)) {
             error = new error_1.CustomError(400, "Bad Request");
@@ -135,33 +88,24 @@ exports.retrieveAllRecord = retrieveAllRecord;
  * @param next 다음 Middleware로 Context를 위임하기 위한 Express 내장 함수
  */
 function retrieveLastestRecord(req, res, next) {
-    var _this = this;
-    var deviceCode = req.params.deviceCode;
+    const deviceCode = req.params.deviceCode;
     camera_1.cameraModel
         .findOne({ deviceCode: deviceCode })
-        .then(function (targetDevice) {
+        .then(targetDevice => {
         if (!targetDevice) {
-            var error = new error_1.CustomError(404, "Not Found");
+            const error = new error_1.CustomError(404, "Not Found");
             throw error;
         }
         return targetDevice._id;
     })
-        .then(function (deviceObjectId) { return __awaiter(_this, void 0, void 0, function () {
-        var latestRecord;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, record_1.recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: 1 })];
-                case 1:
-                    latestRecord = _a.sent();
-                    res.json({
-                        result: 1,
-                        data: latestRecord,
-                    });
-                    return [2 /*return*/];
-            }
+        .then((deviceObjectId) => __awaiter(this, void 0, void 0, function* () {
+        const latestRecord = yield record_1.recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: 1 });
+        res.json({
+            result: 1,
+            data: latestRecord,
         });
-    }); })
-        .catch(function (error) {
+    }))
+        .catch(error => {
         // TODO: 보다 더 적절한 예외 처리
         if (!("statusCode" in error && "message" in error)) {
             error = new error_1.CustomError(400, "Bad Request");

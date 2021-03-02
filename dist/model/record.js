@@ -1,14 +1,32 @@
 "use strict";
 /**
- * 레코드 ID: J321K9453JE...
- * 카메라 일련번호: salmon-XXXX
- * 촬영 시간: XXXX-XX-XX XX:XX (ISO)
- * 검출된 사람 수: 29
- * 검출된 텐트 수: 17
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Record:
+ *        type: object
+ *        required:
+ *          - personCount
+ *          - tentCount
+ *        properties:
+ *          personCount:
+ *            type: number
+ *            description: RPI에서 전송되는 객체 수 검출 값 (사람)
+ *          tentCount:
+ *            type: number
+ *            description: RPI에서 전송되는 객체 수 검출 값 (텐트)
+ *          takenBy:
+ *            type: string
+ *            description: 본 레코드를 등록한 카메라를 참조하기 위한 BSON Type의 ID
+ *          createdAt:
+ *            type: Date
+ *          expiresAt:
+ *            type: Date
+ *            description: Document가 소멸되기 까지의 기간 (현재 1일)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.recordModel = exports.RecordSchema = void 0;
-var mongoose_1 = require("mongoose");
+const mongoose_1 = require("mongoose");
 // Mongoose Schema
 exports.RecordSchema = new mongoose_1.Schema({
     personCount: {

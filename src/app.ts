@@ -3,6 +3,10 @@ import { CustomError, errorHandler } from "./utils/error";
 import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 
+import swaggerUI from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerOptions from "./utils/swagger";
+
 import cameraRoute from "./routes/camera";
 import recordRoute from "./routes/record";
 import sectionRoute from "./routes/section";
@@ -17,6 +21,7 @@ app.use(express.json());
 app.use("/api/camera", cameraRoute);
 app.use("/api/record", recordRoute);
 app.use("/api/section", sectionRoute);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJSDoc(swaggerOptions)));
 
 app.get("/welcome", (req: Request, res: Response) => {
   res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
