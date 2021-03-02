@@ -87,9 +87,9 @@ router.get("/", camera_1.retrieveAllCamera);
  * @swagger
  *  /api/camera/{deviceCode}:
  *    get:
- *      summary: 전체 카메라 장치의 목록을 조회한다.
+ *      summary: 단일 카메라 장치의 세부정보를 조회한다.
  *      tags: [Cameras]
- *      description: 전체 카메라 장치의 목록을 조회한다.
+ *      description: 단일 카메라 장치의 세부정보를 조회한다.
  *      parameters:
  *        - name: deviceCode
  *          in: path
