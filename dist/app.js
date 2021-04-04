@@ -21,7 +21,7 @@ app.use(express_1.default.json());
 app.use("/api/camera", camera_1.default);
 app.use("/api/record", record_1.default);
 app.use("/api/section", section_1.default);
-app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_jsdoc_1.default(swagger_1.default)));
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_jsdoc_1.default(swagger_1.default)));
 app.get("/welcome", (req, res) => {
     res.json("Welocme, This is an API Server for CSID-DGU Graduation Project");
 });

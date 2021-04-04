@@ -125,12 +125,13 @@ function retrieveCongestion(req, res, next) {
         }, { tentCount: 0, personCount: 0 });
         return Object.assign({ numberOfCamera, totalArea, invalidArea }, totalCounts);
     }))
-        .then(({ numberOfCamera, totalArea, invalidArea, tentCount, personCount }) => {
-        const congestionCalculator = new congestion_1.CongestionCalculator(totalArea, invalidArea, numberOfCamera);
+        .then(({ totalArea, invalidArea, tentCount, personCount }) => {
+        const congestionCalculator = new congestion_1.CongestionCalculator(totalArea, invalidArea);
         const congestion = congestionCalculator.calculateCongestion(tentCount, personCount);
         const congestionLevel = congestionCalculator.parseCongestion(congestion);
         res.json({
             result: 1,
+            congestion: congestion,
             congestionLevel: congestionLevel,
         });
     })

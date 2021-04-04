@@ -153,13 +153,14 @@ export function retrieveCongestion(req: Request, res: Response, next: NextFuncti
         personCount: number;
       };
     })
-    .then(({ numberOfCamera, totalArea, invalidArea, tentCount, personCount }) => {
-      const congestionCalculator = new CongestionCalculator(totalArea, invalidArea, numberOfCamera);
+    .then(({ totalArea, invalidArea, tentCount, personCount }) => {
+      const congestionCalculator = new CongestionCalculator(totalArea, invalidArea);
       const congestion = congestionCalculator.calculateCongestion(tentCount, personCount);
       const congestionLevel = congestionCalculator.parseCongestion(congestion);
 
       res.json({
         result: 1,
+        congestion: congestion,
         congestionLevel: congestionLevel,
       });
     })
