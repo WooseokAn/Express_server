@@ -1,122 +1,65 @@
 enum CongestionLevel {
-  EMPTY,
   LIGHT,
   MODERATE,
   CONGESTED,
 }
 
+/**
+ * {(사람 계수 값 * 사람 YOLO 보정치 * 사람 면적) +  (텐트 계수 값 * 텐트 YOLO 보정치 * 텐트 면적)} * (카메라 면적 보정치)
+ */
+
 export class CongestionCalculator {
   private totalArea: number;
   private invalidArea: number;
-  private numberOfCamera: number;
 
+  private _margin = 1;
   private _tentArea = 4;
-
-  get tentArea(): number {
-    return this._tentArea;
-  }
-
-  set tentArea(newVal: number) {
-    if (0 < newVal && newVal < 6) this._tentArea = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'tentArea' Field in CongestionCalculator");
-  }
-
+  private _tentAccruacy = 0.9309;
   private _peopleArea = 2;
+  private _peopleAccurary = 0.8264;
 
-  get peopleArea(): number {
-    return this._peopleArea;
-  }
-
-  set peopleArea(newVal: number) {
-    if (0 < newVal && newVal < 4) this._peopleArea = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-  }
-
-  private _cameraWeight = 1.25;
-
-  get cameraWeight(): number {
-    return this._cameraWeight;
-  }
-
-  set cameraWeight(newVal: number) {
-    if (1 < newVal && newVal < 2) this._cameraWeight = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-  }
-
-  private _peopleWeight = 1.6;
-
-  get peopleWeight(): number {
-    return this._peopleWeight;
-  }
-
-  set peopleWeight(newVal: number) {
-    if (1 < newVal && newVal < 2) this._peopleWeight = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-  }
-
-  private _criteria = 50;
-
-  get criteria(): number {
-    return this._criteria;
-  }
-
-  set criteria(newVal: number) {
-    if (0 < newVal && newVal < 100) this._criteria = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'peopleArea' Field in CongestionCalculator");
-  }
-
-  private _accruacy = 1.1;
-
-  get accruacy(): number {
-    return this._accruacy;
-  }
-
-  set accruacy(newVal: number) {
-    if (1 < newVal && newVal < 2) this._accruacy = newVal;
-    else throw new Error("[ERROR] Invalid Value for 'accruacy' Field in CongestionCalculator");
-  }
-
-  constructor(totalArea: number, invalidArea: number, numberOfCamera: number) {
+  constructor(totalArea: number, invalidArea: number) {
     this.totalArea = totalArea;
     this.invalidArea = invalidArea;
-    this.numberOfCamera = numberOfCamera;
   }
 
-  private calculateAvailableArea(): number {
+  private _getValidArea(): number {
     return this.totalArea - this.invalidArea;
   }
 
-  private calculateTotalTentArea(tentCount: number): number {
-    return tentCount * this.tentArea;
-  }
+  private _getTotalArea(count: number, area: number, accruacy: number): number {
+    const oneSide = Math.sqrt(area);
+    const correctionFactor = 2 - accruacy;
 
-  private calculateTotalPeopleArea(peopleCount: number): number {
-    return peopleCount * this.peopleArea * this.peopleWeight;
+    const marginatedArea = (oneSide + this._margin) ** 2;
+    const correctedCount = count * correctionFactor;
+    return correctedCount * marginatedArea;
   }
 
   public parseCongestion(congestion: number): CongestionLevel {
-    const evaluatedValue = congestion / this.criteria;
+    const evaluatedValue = Math.round(congestion);
 
     let congestionLevel;
 
-    if (evaluatedValue >= 0.5) {
+    if (evaluatedValue > 100) {
       congestionLevel = CongestionLevel.CONGESTED;
-    } else if (evaluatedValue < 0.5 && evaluatedValue >= 0.3) {
+    } else if (70 < evaluatedValue && evaluatedValue <= 100) {
       congestionLevel = CongestionLevel.MODERATE;
-    } else if (evaluatedValue < 0.3 && evaluatedValue > 0.1) {
-      congestionLevel = CongestionLevel.LIGHT;
     } else {
-      congestionLevel = CongestionLevel.EMPTY;
+      congestionLevel = CongestionLevel.LIGHT;
     }
 
     return congestionLevel;
   }
 
   public calculateCongestion(tentCount: number, peopleCount: number): number {
-    const availableArea = this.calculateAvailableArea();
-    const takenArea = this.calculateTotalPeopleArea(peopleCount) + this.calculateTotalTentArea(tentCount);
-    const congestion = this.accruacy * ((this.cameraWeight * this.numberOfCamera * takenArea) / availableArea) * 100;
+    const validArea = this._getValidArea();
+    const areaTakenByPeople = this._getTotalArea(peopleCount, this._peopleArea, this._peopleAccurary);
+    const areaTakenByTents = this._getTotalArea(tentCount, this._tentArea, this._tentAccruacy);
+    const correctionFactor = 1.1;
 
-    return congestion;
+    const totalTakenArea = (areaTakenByPeople + areaTakenByTents) * correctionFactor;
+
+    return (totalTakenArea / validArea) * 100;
   }
 }
