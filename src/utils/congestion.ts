@@ -60,6 +60,13 @@ export class CongestionCalculator {
 
     const totalTakenArea = (areaTakenByPeople + areaTakenByTents) * correctionFactor;
 
+    console.log({
+      validArea: validArea,
+      peopleArea: areaTakenByPeople,
+      tentArea: areaTakenByTents,
+      totalTakenArea: totalTakenArea,
+    });
+
     return (totalTakenArea / validArea) * 100;
   }
 }
