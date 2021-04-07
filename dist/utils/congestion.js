@@ -50,6 +50,12 @@ class CongestionCalculator {
         const areaTakenByTents = this._getTotalArea(tentCount, this._tentArea, this._tentAccruacy);
         const correctionFactor = 1.1;
         const totalTakenArea = (areaTakenByPeople + areaTakenByTents) * correctionFactor;
+        console.log({
+            validArea: validArea,
+            peopleArea: areaTakenByPeople,
+            tentArea: areaTakenByTents,
+            totalTakenArea: totalTakenArea,
+        });
         return (totalTakenArea / validArea) * 100;
     }
 }
