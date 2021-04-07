@@ -124,26 +124,28 @@ export function retrieveCongestion(req: Request, res: Response, next: NextFuncti
       }
 
       // map()을 이용해 Pending 상태의 Promise를 배열애 담고, Promise.all()을 통해 전부 '이행' 시킨다.
-      const totalCounts = (
-        await Promise.all(
-          (registeredCameras as Schema.Types.ObjectId[]).map(cameraObjectId => {
-            const pendingPromise = recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: 1 });
-            return pendingPromise;
-          })
-        )
-      )
-        // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
-        .reduce(
-          (accumulator, currentValue) => {
-            if (currentValue && currentValue.personCount && currentValue.tentCount) {
-              accumulator.tentCount += currentValue.tentCount;
-              accumulator.personCount += currentValue.personCount;
-            }
+      const loadedData = await Promise.all(
+        (registeredCameras as Schema.Types.ObjectId[]).map(cameraObjectId => {
+          const pendingPromise = recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: -1 });
+          // const pendingPromise = recordModel.find({ takenBy: cameraObjectId }).sort({ $natural: -1 }).limit(1);
+          return pendingPromise;
+        })
+      );
 
-            return accumulator;
-          },
-          { tentCount: 0, personCount: 0 }
-        );
+      // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
+      const totalCounts = loadedData.reduce(
+        (accumulator, currentValue) => {
+          if (currentValue) {
+            accumulator.tentCount += currentValue.tentCount;
+            accumulator.personCount += currentValue.personCount;
+          }
+
+          return accumulator;
+        },
+        { tentCount: 0, personCount: 0 }
+      );
+
+      console.log(totalCounts);
 
       return { numberOfCamera, totalArea, invalidArea, ...totalCounts } as {
         numberOfCamera: number;
@@ -160,6 +162,10 @@ export function retrieveCongestion(req: Request, res: Response, next: NextFuncti
 
       res.json({
         result: 1,
+        counts: {
+          tentCount,
+          personCount,
+        },
         congestion: congestion,
         congestionLevel: congestionLevel,
       });

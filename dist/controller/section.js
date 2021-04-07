@@ -111,18 +111,20 @@ function retrieveCongestion(req, res, next) {
             throw error;
         }
         // map()을 이용해 Pending 상태의 Promise를 배열애 담고, Promise.all()을 통해 전부 '이행' 시킨다.
-        const totalCounts = (yield Promise.all(registeredCameras.map(cameraObjectId => {
-            const pendingPromise = record_1.recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: 1 });
+        const loadedData = yield Promise.all(registeredCameras.map(cameraObjectId => {
+            const pendingPromise = record_1.recordModel.findOne({ takenBy: cameraObjectId }).sort({ createdAt: -1 });
+            // const pendingPromise = recordModel.find({ takenBy: cameraObjectId }).sort({ $natural: -1 }).limit(1);
             return pendingPromise;
-        })))
-            // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
-            .reduce((accumulator, currentValue) => {
-            if (currentValue && currentValue.personCount && currentValue.tentCount) {
+        }));
+        // 이어서 reduce()를 이용해 각 데이터의 계수 값을 누적한다.
+        const totalCounts = loadedData.reduce((accumulator, currentValue) => {
+            if (currentValue) {
                 accumulator.tentCount += currentValue.tentCount;
                 accumulator.personCount += currentValue.personCount;
             }
             return accumulator;
         }, { tentCount: 0, personCount: 0 });
+        console.log(totalCounts);
         return Object.assign({ numberOfCamera, totalArea, invalidArea }, totalCounts);
     }))
         .then(({ totalArea, invalidArea, tentCount, personCount }) => {
@@ -131,6 +133,10 @@ function retrieveCongestion(req, res, next) {
         const congestionLevel = congestionCalculator.parseCongestion(congestion);
         res.json({
             result: 1,
+            counts: {
+                tentCount,
+                personCount,
+            },
             congestion: congestion,
             congestionLevel: congestionLevel,
         });
