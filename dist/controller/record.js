@@ -66,7 +66,7 @@ function retrieveAllRecord(req, res, next) {
         return targetDevice._id;
     })
         .then((deviceObjectId) => __awaiter(this, void 0, void 0, function* () {
-        const records = yield record_1.recordModel.find({ takenBy: deviceObjectId });
+        const records = yield record_1.recordModel.find({ takenBy: deviceObjectId }).sort({ $natural: -1 });
         res.json({
             result: 1,
             data: records,
@@ -99,7 +99,8 @@ function retrieveLastestRecord(req, res, next) {
         return targetDevice._id;
     })
         .then((deviceObjectId) => __awaiter(this, void 0, void 0, function* () {
-        const latestRecord = yield record_1.recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: 1 });
+        const latestRecord = yield record_1.recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: -1 });
+        // const latestRecord = await recordModel.find({ takenBy: deviceObjectId }).sort({ $natural: -1 }).limit(1);
         res.json({
             result: 1,
             data: latestRecord,

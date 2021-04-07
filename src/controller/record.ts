@@ -69,7 +69,7 @@ export function retrieveAllRecord(req: Request, res: Response, next: NextFunctio
       return targetDevice._id as Schema.Types.ObjectId;
     })
     .then(async deviceObjectId => {
-      const records = await recordModel.find({ takenBy: deviceObjectId });
+      const records = await recordModel.find({ takenBy: deviceObjectId }).sort({ $natural: -1 });
 
       res.json({
         result: 1,
@@ -106,7 +106,8 @@ export function retrieveLastestRecord(req: Request, res: Response, next: NextFun
       return targetDevice._id as Schema.Types.ObjectId;
     })
     .then(async deviceObjectId => {
-      const latestRecord = await recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: 1 });
+      const latestRecord = await recordModel.findOne({ takenBy: deviceObjectId }).sort({ createdAt: -1 });
+      // const latestRecord = await recordModel.find({ takenBy: deviceObjectId }).sort({ $natural: -1 }).limit(1);
 
       res.json({
         result: 1,
