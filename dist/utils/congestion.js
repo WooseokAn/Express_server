@@ -12,9 +12,10 @@ var CongestionLevel;
  */
 class CongestionCalculator {
     constructor(totalArea, invalidArea) {
-        this._margin = 1;
+        this._tentMargin = 2;
         this._tentArea = 4;
         this._tentAccruacy = 0.9309;
+        this._peopleMargin = 1;
         this._peopleArea = 2;
         this._peopleAccurary = 0.8264;
         this.totalArea = totalArea;
@@ -23,20 +24,25 @@ class CongestionCalculator {
     _getValidArea() {
         return this.totalArea - this.invalidArea;
     }
-    _getTotalArea(count, area, accruacy) {
+    _getTotalArea(count, area, margin, accruacy) {
         const oneSide = Math.sqrt(area);
         const correctionFactor = 2 - accruacy;
-        const marginatedArea = Math.pow((oneSide + this._margin), 2);
+        const marginatedArea = Math.pow((oneSide + margin), 2); // 실제 면적에 마진값을 반영해 총 면적 계산
         const correctedCount = count * correctionFactor;
         return correctedCount * marginatedArea;
     }
     parseCongestion(congestion) {
         const evaluatedValue = Math.round(congestion);
         let congestionLevel;
-        if (evaluatedValue > 100) {
+        /**
+         * 혼잡: 혼잡도 70 이상
+         * 보통: 혼잡도 30 이상, 70 미만
+         * 여유: 혼잡도 30 미만
+         */
+        if (evaluatedValue >= 70) {
             congestionLevel = CongestionLevel.CONGESTED;
         }
-        else if (70 < evaluatedValue && evaluatedValue <= 100) {
+        else if (30 <= evaluatedValue && evaluatedValue < 70) {
             congestionLevel = CongestionLevel.MODERATE;
         }
         else {
@@ -46,9 +52,10 @@ class CongestionCalculator {
     }
     calculateCongestion(tentCount, peopleCount) {
         const validArea = this._getValidArea();
-        const areaTakenByPeople = this._getTotalArea(peopleCount, this._peopleArea, this._peopleAccurary);
-        const areaTakenByTents = this._getTotalArea(tentCount, this._tentArea, this._tentAccruacy);
-        const correctionFactor = 1.1;
+        const areaTakenByPeople = this._getTotalArea(peopleCount, this._peopleArea, this._peopleMargin, this._peopleAccurary);
+        const areaTakenByTents = this._getTotalArea(tentCount, this._tentArea, this._tentMargin, this._tentAccruacy);
+        // 전체 측정 면적(validArea)을 실측정 면적(areaTakenByPeople + areaTakenByTents)으로 나눈 값
+        const correctionFactor = validArea / (areaTakenByPeople + areaTakenByTents);
         const totalTakenArea = (areaTakenByPeople + areaTakenByTents) * correctionFactor;
         console.log({
             validArea: validArea,
